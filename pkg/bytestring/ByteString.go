@@ -10,3 +10,8 @@ type ByteString struct {
 	// Array de bytes para armazenar o valor
 	Bytes []byte
 }
+
+// Invalid ByteString factory
+func Invalid() ByteString {
+	return ByteString{Format: "invalid", Bytes: nil}
+}
