@@ -29,3 +29,9 @@ para clonar o repositório. Após isso, você terá uma pasta acessível pelo go
 Por exemplo:
 
 $ go build github.com/titosilva/cipherbreaker-go/pkg/bytestring
+
+## How to know what I can do?
+Como saber o que posso fazer?
+Na aba de issues, as tarefas foram adicionadas. Eventualmente e conforme a necessidade, adicionamos mais tarefas aos poucos :happy:
+
+## Obrigado!!!!
