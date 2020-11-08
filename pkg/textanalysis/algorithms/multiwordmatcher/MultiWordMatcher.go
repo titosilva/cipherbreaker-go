@@ -9,16 +9,26 @@ import (
 // This is struct works as a simple
 // container to give informations about matches found
 type privMatch struct {
-	Word string
+	Word  string
+	Index int
 }
 
-// privMatchInfo struct
+// privMatchChannels struct
 // Will not be exported
 // This struct works as a simple
 // container to the channels used in matching
-type privMatchInfo struct {
+type privMatchChannels struct {
 	WordChannel chan string
 	Matches     chan privMatch
+}
+
+// MatchInfo struct
+// Exported struct that contains
+// information about for which indexes a word was found
+// in a text
+type MatchInfo struct {
+	Word    string
+	Indexes []int
 }
 
 // Dry struct
@@ -30,12 +40,19 @@ type Dry struct {
 	ThreadsNumber int
 }
 
-func matchThread(matchInfo privMatchInfo, text string) {
-	for word := range matchInfo.WordChannel {
-		match, _ := wordmatcher.WordMatcher{Word: word}.Analyse(text)
+func matchThread(matchChannel privMatchChannels, text string) {
+	for true {
+		word, open := <-matchChannel.WordChannel
+
+		if !open {
+			close(matchChannel.Matches)
+			break
+		}
+
+		match, idx := wordmatcher.WordMatcher{Word: word}.Analyse(text)
 
 		if match {
-			matchInfo.Matches <- privMatch{Word: word}
+			matchChannel.Matches <- privMatch{Word: word, Index: idx}
 		}
 	}
 }
@@ -43,17 +60,49 @@ func matchThread(matchInfo privMatchInfo, text string) {
 // Analyse method of structure dry
 // Takes the word list of Dry and tries to find matches in the given text
 // using concurrency
-func (dry Dry) Analyse(text string) {
+func (dry Dry) Analyse(text string) []MatchInfo {
 	// Generate Channel container
-	matchInfo := privMatchInfo{
-		WordChannel: make(chan string),
-		Matches:     make(chan privMatch),
+	matchChannel := privMatchChannels{
+		// Length 100 buffer
+		WordChannel: make(chan string, 100),
+		Matches:     make(chan privMatch, 100),
 	}
+
+	// Put words in the channel
+	go func() {
+		for _, word := range dry.WordList {
+			matchChannel.WordChannel <- word
+		}
+	}()
 
 	// Generate Word Matching Threads
 	for i := 0; i < dry.ThreadsNumber; i++ {
-		go matchThread(matchInfo, text)
+		go matchThread(matchChannel, text)
 	}
 
-	// Output countings
+	// Output formating
+	// Reads from match channel
+	// and appends the index to
+	// match info return
+	result := make([]MatchInfo, 0)
+	go func() {
+		// Reads the channel
+		for match := range matchChannel.Matches {
+			// Compares a received word with the words in the channel
+			for idx, matchInfo := range result {
+				if matchInfo.Word == match.Word {
+					// If the word is already in the list, just append the
+					// index to the list of indexes
+					result[idx].Indexes = append(result[idx].Indexes, match.Index)
+				}
+			}
+			// If the word is not in the list yet, add it to the list
+			result = append(result, MatchInfo{
+				Word:    match.Word,
+				Indexes: append(make([]int, 0), match.Index),
+			})
+		}
+	}()
+
+	return result
 }
