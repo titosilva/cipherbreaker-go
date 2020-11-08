@@ -1,4 +1,4 @@
-package algorithms
+package caesar
 
 import (
 	"testing"

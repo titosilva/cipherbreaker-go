@@ -1,4 +1,4 @@
-package algorithms
+package wordmatcher
 
 import "strings"
 
