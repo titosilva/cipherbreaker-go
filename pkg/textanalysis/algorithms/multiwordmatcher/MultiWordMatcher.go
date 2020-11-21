@@ -49,10 +49,16 @@ func matchThread(matchChannel privMatchChannels, text string) {
 			break
 		}
 
-		match, idx := wordmatcher.WordMatcher{Word: word}.Analyse(text)
+		idxBase := 0
+		for true {
+			match, idx := wordmatcher.WordMatcher{Word: word}.Analyse(text[idxBase:])
 
-		if match {
-			matchChannel.Matches <- privMatch{Word: word, Index: idx}
+			if match {
+				matchChannel.Matches <- privMatch{Word: word, Index: idxBase + idx}
+				idxBase += len(word) + idx
+			} else {
+				break
+			}
 		}
 	}
 }
@@ -73,6 +79,7 @@ func (dry Dry) Analyse(text string) []MatchInfo {
 		for _, word := range dry.WordList {
 			matchChannel.WordChannel <- word
 		}
+		close(matchChannel.WordChannel)
 	}()
 
 	// Generate Word Matching Threads
@@ -85,24 +92,28 @@ func (dry Dry) Analyse(text string) []MatchInfo {
 	// and appends the index to
 	// match info return
 	result := make([]MatchInfo, 0)
-	go func() {
-		// Reads the channel
-		for match := range matchChannel.Matches {
-			// Compares a received word with the words in the channel
-			for idx, matchInfo := range result {
-				if matchInfo.Word == match.Word {
-					// If the word is already in the list, just append the
-					// index to the list of indexes
-					result[idx].Indexes = append(result[idx].Indexes, match.Index)
-				}
+	// Reads the channel
+	for match := range matchChannel.Matches {
+		// Compares a received word with the words in the channel
+		matched := false
+		for idx, matchInfo := range result {
+			if matchInfo.Word == match.Word {
+				// If the word is already in the list, just append the
+				// index to the list of indexes
+				result[idx].Indexes = append(result[idx].Indexes, match.Index)
+				matched = true
+				break
 			}
-			// If the word is not in the list yet, add it to the list
-			result = append(result, MatchInfo{
-				Word:    match.Word,
-				Indexes: append(make([]int, 0), match.Index),
-			})
 		}
-	}()
+		if matched {
+			break
+		}
+		// If the word is not in the list yet, add it to the list
+		result = append(result, MatchInfo{
+			Word:    match.Word,
+			Indexes: append(make([]int, 0), match.Index),
+		})
+	}
 
 	return result
 }
