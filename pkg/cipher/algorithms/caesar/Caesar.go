@@ -24,9 +24,37 @@ func (c Caesar) Cipher(plainTextString string, key byte) (string, error) {
 
 	for idx, char := range plainText {
 		if 'a' <= char && char <= 'z' {
-			cipherText[idx] = char + (keyAlpha)
+			cipherText[idx] = (char-'a'+(keyAlpha))%26 + 'a'
 		} else if 'A' <= char && char <= 'Z' {
-			cipherText[idx] = char + (keyAlpha)
+			cipherText[idx] = (char-'A'+(keyAlpha))%26 + 'A'
+		} else {
+			cipherText[idx] = char
+		}
+	}
+
+	return string(cipherText), nil
+}
+
+// Decipher method
+func (c Caesar) Decipher(cipherTextString string, key byte) (string, error) {
+	plainText := []byte(cipherTextString)
+	cipherText := make([]byte, len(plainText))
+	var keyAlpha byte
+
+	switch {
+	case 'a' <= key && key <= 'z':
+		keyAlpha = key - 'a'
+	case 'A' <= key && key <= 'Z':
+		keyAlpha = key - 'A'
+	default:
+		return "", fmt.Errorf("Key %c is not valid. Use [a-z] or [A-Z]", key)
+	}
+
+	for idx, char := range plainText {
+		if 'a' <= char && char <= 'z' {
+			cipherText[idx] = ((char-'a'-(keyAlpha))+26)%26 + 'a'
+		} else if 'A' <= char && char <= 'Z' {
+			cipherText[idx] = ((char-'A'-(keyAlpha))+26)%26 + 'A'
 		} else {
 			cipherText[idx] = char
 		}
