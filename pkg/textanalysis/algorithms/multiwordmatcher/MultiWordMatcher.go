@@ -40,6 +40,15 @@ type Dry struct {
 	ThreadsNumber int
 }
 
+// FromChannel struct
+// Takes a simple list of words (in the form of an array)
+// and tries to match
+type FromChannel struct {
+	WordChannel chan string
+	// Number of threads to run while matching
+	ThreadsNumber int
+}
+
 func matchThread(matchChannel privMatchChannels, text string) {
 	for true {
 		word, open := <-matchChannel.WordChannel
@@ -61,6 +70,68 @@ func matchThread(matchChannel privMatchChannels, text string) {
 			}
 		}
 	}
+}
+
+// Analyse method of structure FromChannel
+// Takes the word channel of FromChannel and tries to find matches in the given text
+// using concurrency
+func (fromCh FromChannel) Analyse(text string) []MatchInfo {
+	// Generate Channel container
+	matchChannel := privMatchChannels{
+		// Length 100 buffer
+		WordChannel: make(chan string, 100),
+		Matches:     make(chan privMatch, 100),
+	}
+
+	// Using goroutines
+	// Put words in the channel
+	go func() {
+		for true {
+			word, isOpen := <-fromCh.WordChannel
+
+			if !isOpen {
+				close(matchChannel.WordChannel)
+				break
+			}
+
+			matchChannel.WordChannel <- word
+		}
+	}()
+
+	// Generate Word Matching Threads
+	for i := 0; i < fromCh.ThreadsNumber; i++ {
+		go matchThread(matchChannel, text)
+	}
+
+	// Output formating
+	// Reads from match channel
+	// and appends the index to
+	// match info return
+	result := make([]MatchInfo, 0)
+	// Reads the channel
+	for match := range matchChannel.Matches {
+		// Compares a received word with the words in the channel
+		matched := false
+		for idx, matchInfo := range result {
+			if matchInfo.Word == match.Word {
+				// If the word is already in the list, just append the
+				// index to the list of indexes
+				result[idx].Indexes = append(result[idx].Indexes, match.Index)
+				matched = true
+				break
+			}
+		}
+		if matched {
+			break
+		}
+		// If the word is not in the list yet, add it to the list
+		result = append(result, MatchInfo{
+			Word:    match.Word,
+			Indexes: append(make([]int, 0), match.Index),
+		})
+	}
+
+	return result
 }
 
 // Analyse method of structure dry
