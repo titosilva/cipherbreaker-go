@@ -41,7 +41,7 @@ type Dry struct {
 }
 
 // FromChannel struct
-// Takes a simple list of words (in the form of an array)
+// Takes a simple list of words (in the form of a channel)
 // and tries to match
 type FromChannel struct {
 	WordChannel chan string
