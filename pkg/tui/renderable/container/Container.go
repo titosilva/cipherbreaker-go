@@ -16,21 +16,21 @@ type Container struct {
 			active bool
 			height uint
 			width  uint
-		}
 
-		border struct {
-			active bool
-			size   int
-			// Sides
-			topBorderChar    byte
-			bottomBorderChar byte
-			leftBorderChar   byte
-			rightBorderChar  byte
-			// Corners
-			tlCornerChar byte
-			trCornerChar byte
-			blCornerChar byte
-			brCornerChar byte
+			border struct {
+				active bool
+				size   int
+				// Sides
+				topBorderChar    byte
+				bottomBorderChar byte
+				leftBorderChar   byte
+				rightBorderChar  byte
+				// Corners
+				tlCornerChar byte
+				trCornerChar byte
+				blCornerChar byte
+				brCornerChar byte
+			}
 		}
 	}
 }
