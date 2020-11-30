@@ -13,7 +13,7 @@ type Vigenere struct{}
 func (c Vigenere) Cipher(plainTextString string, key string) (string, error) {
 	plainText := []byte(plainTextString)
 	cipherText := make([]byte, len(plainText))
-	var keyAlpha []byte
+	keyAlpha := make([]byte, len(key))
 
 	// Standardizing the format of the key
 	for i := range key {
@@ -26,28 +26,20 @@ func (c Vigenere) Cipher(plainTextString string, key string) (string, error) {
 		}
 	}
 
-	//Equalling the size of the key with the text, if the key is smaller than the text
-	for i, aux := 0, 0; i < len(plainText); i++ {
-		if len(keyAlpha) < len(plainText) && len(keyAlpha) > 1 && keyAlpha[i] == 0 && plainText[i] != 0 {
-			keyAlpha[i] = keyAlpha[aux]
-			aux++
-		} else if len(key) < len(plainText) {
-			keyAlpha[i] = plainText[i]
+	//Encoding the plainText into the cipherText using the keyAlpha
+	idxKey := 0
+	for idx := range plainText {
+		if plainText[idx] >= 'a' && plainText[idx] <= 'z' {
+			cipherText[idx] = ((plainText[idx]-'a')+keyAlpha[idxKey])%26 + 'a'
+			idxKey = (idxKey + 1) % len(keyAlpha)
+		} else if plainText[idx] >= 'A' && plainText[idx] <= 'Z' {
+			cipherText[idx] = ((plainText[idx]-'A')+keyAlpha[idxKey])%26 + 'A'
+			idxKey = (idxKey + 1) % len(keyAlpha)
 		} else {
-			break
+			cipherText[idx] = plainText[idx]
 		}
 	}
 
-	//Encoding the plainText into the cipherText using the keyAlpha
-	for idx := range plainText {
-		if cipherText[idx] >= 'a' && cipherText[idx] <= 'z' {
-			cipherText[idx] = (plainText[idx]+keyAlpha[idx])%26 + 'a'
-		} else if cipherText[idx] >= 'A' && cipherText[idx] <= 'Z' {
-			cipherText[idx] = (plainText[idx]+keyAlpha[idx])%26 + 'A'
-		} else {
-			cipherText[idx] = keyAlpha[idx]
-		}
-	}
 	return string(cipherText), nil
 }
 
@@ -59,7 +51,7 @@ func (c Vigenere) Cipher(plainTextString string, key string) (string, error) {
 func (c Vigenere) Decipher(cipherTextString string, key string) (string, error) {
 	cipherText := []byte(cipherTextString)
 	decipherText := make([]byte, len(cipherText))
-	var keyAlpha []byte
+	keyAlpha := make([]byte, len(key))
 
 	// Standardizing the format of the key
 	for i := range key {
@@ -72,27 +64,19 @@ func (c Vigenere) Decipher(cipherTextString string, key string) (string, error) 
 		}
 	}
 
-	//Equalling the size of the key with the text, if the key is smaller than the text
-	for i, aux := 0, 0; i < len(cipherText); i++ {
-		if len(keyAlpha) < len(cipherText) && len(keyAlpha) > 1 && keyAlpha[i] == 0 && cipherText[i] != 0 {
-			keyAlpha[i] = keyAlpha[aux]
-			aux++
-		} else if len(key) < len(cipherText) {
-			keyAlpha[i] = cipherText[i]
+	//Encoding the cipherText into the decipherText using the keyAlpha
+	idxKey := 0
+	for idx := range cipherText {
+		if cipherText[idx] >= 'a' && cipherText[idx] <= 'z' {
+			decipherText[idx] = ((cipherText[idx]-'a')+26-keyAlpha[idxKey])%26 + 'a'
+			idxKey = (idxKey + 1) % len(keyAlpha)
+		} else if cipherText[idx] >= 'A' && cipherText[idx] <= 'Z' {
+			decipherText[idx] = ((cipherText[idx]-'A')+26-keyAlpha[idxKey])%26 + 'A'
+			idxKey = (idxKey + 1) % len(keyAlpha)
 		} else {
-			break
+			decipherText[idx] = cipherText[idx]
 		}
 	}
 
-	//Decoding the plainText into the cipherText using the keyAlpha
-	for idx := range cipherText {
-		if decipherText[idx] >= 'a' && decipherText[idx] <= 'z' {
-			decipherText[idx] = (cipherText[idx]-keyAlpha[idx]+26)%26 + 'a'
-		} else if decipherText[idx] >= 'A' && decipherText[idx] <= 'Z' {
-			decipherText[idx] = (cipherText[idx]-keyAlpha[idx]+26)%26 + 'A'
-		} else {
-			decipherText[idx] = keyAlpha[idx]
-		}
-	}
 	return string(decipherText), nil
 }

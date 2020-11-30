@@ -16,9 +16,9 @@ func TestVigenereCipher(t *testing.T) {
 		success bool
 	}{
 		{
-			caseString: "abcde",
-			caseKey:    "bac",
-			expected:   "bacba",
+			caseString: "Deus e bom, o tempo todo",
+			caseKey:    "UnB",
+			expected:   "Xrvm r ciz, p nrnjb uiqp",
 			success:    true,
 		},
 	}
@@ -58,9 +58,9 @@ func TestVigenereDecipher(t *testing.T) {
 		success bool
 	}{
 		{
-			caseString: "bacba",
-			caseKey:    "bac",
-			expected:   "abcde",
+			caseString: "Xrvm r ciz, p nrnjb uiqp",
+			caseKey:    "UnB",
+			expected:   "Deus e bom, o tempo todo",
 			success:    true,
 		},
 	}
