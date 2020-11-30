@@ -68,7 +68,7 @@ func TestVigenereDecipher(t *testing.T) {
 		if c.success {
 			// Success cases
 			t.Logf("Vigenere testing: %s <key: %s> -> %s", c.caseString, c.caseKey, c.expected)
-			result, err := vigenere.Cipher(c.caseString, c.caseKey)
+			result, err := vigenere.Decipher(c.caseString, c.caseKey)
 
 			if err != nil {
 				t.Errorf("Vigenere FAILED: %s <key: %s> -> expected: %s; got ERROR: %s", c.caseString, c.caseKey, c.expected, err)
@@ -80,7 +80,7 @@ func TestVigenereDecipher(t *testing.T) {
 		} else {
 			// Fail cases
 			t.Logf("Vigenere testing: %s <key: %s> -> expected err", c.caseString, c.caseKey)
-			result, err := vigenere.Cipher(c.caseString, c.caseKey)
+			result, err := vigenere.Decipher(c.caseString, c.caseKey)
 
 			if err == nil {
 				t.Errorf("Vigenere FAILED: %s <key: %s> -> expected error, but got: %s", c.caseString, c.caseKey, result)
