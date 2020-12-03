@@ -1,6 +1,7 @@
 package container
 
 import (
+	"os"
 	"strings"
 	"testing"
 
@@ -137,5 +138,38 @@ func Test_container_rendering_fixed_size(t *testing.T) {
 	rendered2 = strings.ReplaceAll(rendered2, "\n", "|")
 	if rendered2 != expected {
 		t.Errorf("Container render method failed: expected %s, got %s", expected, rendered2)
+	}
+}
+
+func Test_container_rendering_border(t *testing.T) {
+	box := make([]byte, 1000)
+	file, err := os.Open("boxWithBorder.txt")
+	if err != nil {
+		t.Errorf("Could not find read boxWithBorder.txt")
+	}
+
+	file.Read(box)
+
+	c := NewContainer()
+
+	c.SetFixedSize(10, 3)
+	if !c.SetBorder('|', '+', '-', '+', '|', '+', '-', '+') {
+		t.Errorf("SetBorder returned false")
+	}
+
+	c.AddItem(&Text{Text: "My text is"})
+	txt1 := Text{Text: "here."}
+	txt1.SetPosition(1, 0)
+	c.AddItem(&txt1)
+	txt2 := Text{Text: "In the box"}
+	txt2.SetPosition(2, 0)
+	c.AddItem(&txt2)
+
+	rendered := []byte(c.Render())
+
+	for idx, char := range rendered {
+		if char != box[idx] {
+			t.Errorf("At position %d, found %c but expected %c", idx, char, box[idx])
+		}
 	}
 }

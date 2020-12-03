@@ -1,6 +1,7 @@
 package container
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/titosilva/cipherbreaker-go/pkg/tui/renderable"
@@ -19,7 +20,6 @@ type Container struct {
 
 			border struct {
 				active bool
-				size   int
 				// Sides
 				topBorderChar    byte
 				bottomBorderChar byte
@@ -54,6 +54,33 @@ func (c *Container) SetFixedSize(width uint, height uint) {
 	c.options.fixedSize.active = true
 	c.options.fixedSize.width = width
 	c.options.fixedSize.height = height
+}
+
+// SetBorder method of container
+// Activates border rendering and sets the borders' chars
+// Must be used only in fixed size containers
+// returns a bool that indicates whether the operation
+// was accepted or rejected
+func (c *Container) SetBorder(
+	leftBorder, topLeftCorner,
+	topBorder, topRightCorner,
+	rightBorder, bottomRightCorner,
+	bottomBorder, bottomLeftCorner byte) (borderWasSet bool) {
+
+	if c.options.fixedSize.active == false {
+		return false
+	}
+
+	c.options.fixedSize.border.active = true
+	c.options.fixedSize.border.leftBorderChar = leftBorder
+	c.options.fixedSize.border.tlCornerChar = topLeftCorner
+	c.options.fixedSize.border.topBorderChar = topBorder
+	c.options.fixedSize.border.trCornerChar = topRightCorner
+	c.options.fixedSize.border.rightBorderChar = rightBorder
+	c.options.fixedSize.border.brCornerChar = bottomRightCorner
+	c.options.fixedSize.border.bottomBorderChar = bottomBorder
+	c.options.fixedSize.border.blCornerChar = bottomLeftCorner
+	return true
 }
 
 // Render method of container
@@ -117,6 +144,28 @@ func (c Container) Render() (containerRendered string) {
 		for len(tempContainer) != int(c.options.fixedSize.height) {
 			tempContainer = append(tempContainer, strings.Repeat(" ", int(c.options.fixedSize.width)))
 		}
+
+		containerRendered = strings.Join(tempContainer, "\n")
+	}
+
+	// Border
+	if c.options.fixedSize.border.active {
+		var tempContainer = make([]string, 0)
+
+		padding := make([]byte, 0)
+		for i := uint(0); i < c.options.fixedSize.width; i++ {
+			padding = append(padding, c.options.fixedSize.border.topBorderChar)
+		}
+
+		paddingTop := fmt.Sprintf("%c%s%c", c.options.fixedSize.border.tlCornerChar, string(padding), c.options.fixedSize.border.trCornerChar)
+		paddingBottom := fmt.Sprintf("%c%s%c", c.options.fixedSize.border.blCornerChar, string(padding), c.options.fixedSize.border.brCornerChar)
+
+		tempContainer = append(tempContainer, string(paddingTop))
+		for _, line := range strings.Split(containerRendered, "\n") {
+			tempContainer = append(tempContainer, fmt.Sprintf("%c%s%c", c.options.fixedSize.border.leftBorderChar,
+				line, c.options.fixedSize.border.rightBorderChar))
+		}
+		tempContainer = append(tempContainer, string(paddingBottom))
 
 		containerRendered = strings.Join(tempContainer, "\n")
 	}
