@@ -16,6 +16,7 @@ func main() {
 	}
 
 	defer screen.Restore(oldState)
+
 	var main cipherbreakersections.MainSection
 	section.StartExecution(main)
 }
