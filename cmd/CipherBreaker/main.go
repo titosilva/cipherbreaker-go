@@ -14,7 +14,6 @@ func main() {
 		println(err)
 		return
 	}
-
 	defer screen.Restore(oldState)
 
 	var main cipherbreakersections.MainSection

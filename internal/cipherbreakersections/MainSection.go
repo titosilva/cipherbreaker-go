@@ -19,16 +19,22 @@ func (main MainSection) Run(next *section.Section) {
 
 	hour := renderable.NewText("OK", 0, 0)
 	mainView.ViewContainer.AddItem(&hour)
+	mainView.SetBorder('|', '.', '.', '.', '|', '.', '.', '.')
 	mainView.Show()
 	go mainView.DynamicRender()
+	defer mainView.Kill()
 
-	for true {
-		hour.SetText(time.Now().String())
-		input, _ := screen.ReadByte()
-		if input == 27 {
-			break
+	interacting := true
+	for interacting {
+		select {
+		case i := <-screen.InputChannel:
+			if i == 27 {
+				interacting = false
+			}
+		default:
+			hour.SetText(time.Now().String())
+			time.Sleep(screen.RefreshMinDelay)
 		}
-		time.Sleep(time.Second)
 	}
 
 	next = nil

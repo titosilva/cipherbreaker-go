@@ -159,9 +159,10 @@ func (c *Container) Render() (containerRendered string) {
 		paddingBottom := fmt.Sprintf("%c%s%c", c.options.fixedSize.border.blCornerChar, string(padding), c.options.fixedSize.border.brCornerChar)
 
 		tempContainer = append(tempContainer, string(paddingTop))
-		for _, line := range strings.Split(containerRendered, "\n") {
+		lines := strings.Split(containerRendered, "\n")
+		for _, line := range lines[:len(lines)-2] {
 			tempContainer = append(tempContainer, fmt.Sprintf("%c%s%c", c.options.fixedSize.border.leftBorderChar,
-				line, c.options.fixedSize.border.rightBorderChar))
+				line[:len(line)-2], c.options.fixedSize.border.rightBorderChar))
 		}
 		tempContainer = append(tempContainer, string(paddingBottom))
 

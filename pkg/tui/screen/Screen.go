@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	"golang.org/x/term"
@@ -13,6 +14,11 @@ import (
 const (
 	// RefreshMinDelay -> time to wait on request updates
 	RefreshMinDelay = 100 * time.Millisecond
+)
+
+var (
+	inputActive  bool
+	InputChannel chan byte
 )
 
 // Init function of screen
@@ -28,12 +34,26 @@ func Init() (*term.State, error) {
 	}
 
 	term.MakeRaw(int(os.Stdin.Fd()))
+
+	go func() {
+		inputActive = true
+		InputChannel = make(chan byte, 100)
+		for inputActive {
+
+			input, _ := ReadByte()
+
+			InputChannel <- input
+		}
+		close(InputChannel)
+	}()
+
 	return state, nil
 }
 
 // Restore function
 // Set the terminal to old state
 func Restore(state *term.State) {
+	inputActive = false
 	term.Restore(int(os.Stdin.Fd()), state)
 }
 
@@ -61,7 +81,11 @@ func Clear() {
 // Print function
 // Prints on the screen
 func Print(content string) {
-	fmt.Print(content)
+	lines := strings.Split(content, "\n")
+	for _, line := range lines[:len(lines)-1] {
+		fmt.Printf(line + "\r\n")
+	}
+	fmt.Printf(lines[len(lines)-1])
 }
 
 // ReadByte function

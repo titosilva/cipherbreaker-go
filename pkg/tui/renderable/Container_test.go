@@ -92,6 +92,8 @@ func Test_container_rendering_container_inside_container(t *testing.T) {
 	if rendered != "CCC|||_|_|_|_ABXXXOK2" {
 		t.Errorf("Container render method failed: expected %s, got %s", "CCC|||_|_|_|_ABXXXOK2", rendered)
 	}
+
+	print(cont2.Render())
 }
 
 func Test_container_rendering_fixed_size(t *testing.T) {
@@ -172,4 +174,5 @@ func Test_container_rendering_border(t *testing.T) {
 			t.Errorf("At position %d, found %c but expected %c", idx, char, box[idx])
 		}
 	}
+	print(c.Render())
 }

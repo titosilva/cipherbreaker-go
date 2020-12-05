@@ -3,6 +3,7 @@ package renderable
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/titosilva/cipherbreaker-go/pkg/tui/screen"
 )
@@ -67,6 +68,7 @@ func (oplist *OptionsList) DynamicRender(update chan bool) {
 		}
 
 		currentSelection = oplist.selected
+		time.Sleep(screen.RefreshMinDelay)
 	}
 }
 

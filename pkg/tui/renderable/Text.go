@@ -1,6 +1,11 @@
 package renderable
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+
+	"github.com/titosilva/cipherbreaker-go/pkg/tui/screen"
+)
 
 // Text struct
 // Defines a renderable text
@@ -39,11 +44,11 @@ func (t *Text) DynamicRender(update chan bool) {
 	for !t.killed {
 		current := t.Text
 		if current != content {
-			println("loop")
 			update <- true
 		}
 
 		content = current
+		time.Sleep(screen.RefreshMinDelay)
 	}
 }
 

@@ -80,7 +80,11 @@ func (v View) DynamicRender() {
 
 			if request {
 				// If received, show view on the screen
-				screen.Print(v.Render())
+				// r := strings.ReplaceAll(v.Render(), " ", "_")
+				// r := strings.ReplaceAll(v.Render(), "\n", "")
+				// r := strings.ReplaceAll(v.Render(), "\n", "")
+				r := v.Render()
+				screen.Print(r)
 				time.Sleep(screen.RefreshMinDelay)
 			}
 		}
