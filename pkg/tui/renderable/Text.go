@@ -20,7 +20,7 @@ func NewText(text string, row, col uint) Text {
 
 // Render method of Text
 // Draws the Text
-func (t Text) Render() string {
+func (t *Text) Render() string {
 	return fmt.Sprint(t.Text)
 }
 
@@ -32,23 +32,23 @@ func (t *Text) SetText(content string) {
 
 // DynamicRender method of Text
 // Keeps watching for changes in text content.
-func (t Text) DynamicRender(update chan bool) {
+func (t *Text) DynamicRender(update chan bool) {
 	content := t.Text
 	t.killed = false
 
 	for !t.killed {
 		current := t.Text
 		if current != content {
+			println("loop")
 			update <- true
 		}
 
 		content = current
-		print(content)
 	}
 }
 
 // Kill method of Text
 // Kills the text dynamic rendering
-func (t Text) Kill() {
+func (t *Text) Kill() {
 	t.killed = true
 }

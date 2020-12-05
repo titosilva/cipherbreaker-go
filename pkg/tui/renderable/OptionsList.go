@@ -28,12 +28,12 @@ func (oplist *OptionsList) AddOption(option Renderable) {
 
 // GetSelectedOption method of OptionsList
 // Returns the selected option as an int
-func (oplist OptionsList) GetSelectedOption() int {
+func (oplist *OptionsList) GetSelectedOption() int {
 	return oplist.selected
 }
 
 // Render method of OptionsList
-func (oplist OptionsList) Render() string {
+func (oplist *OptionsList) Render() string {
 	c := NewContainer()
 
 	lineCounter := 0
@@ -50,15 +50,14 @@ func (oplist OptionsList) Render() string {
 	}
 
 	// Add the selection char in the selection line
-	selection := NewText(fmt.Sprintf(" %c ", oplist.selectionChar), uint(selectionLine), 0)
-
-	c.AddItem(&selection)
+	text := NewText(fmt.Sprintf(" %c ", oplist.selectionChar), uint(selectionLine), 0)
+	c.AddItem(&text)
 
 	return c.Render()
 }
 
 // DynamicRender method of OptionsList
-func (oplist OptionsList) DynamicRender(update chan bool) {
+func (oplist *OptionsList) DynamicRender(update chan bool) {
 	currentSelection := oplist.selected
 	for true {
 		// Check if selection has changed
@@ -73,7 +72,7 @@ func (oplist OptionsList) DynamicRender(update chan bool) {
 
 // Interact method of OptionsList
 // Interacts with the user to select an option
-func (oplist OptionsList) Interact() {
+func (oplist *OptionsList) Interact() {
 	input, err := screen.ReadByte()
 
 	if err != nil {

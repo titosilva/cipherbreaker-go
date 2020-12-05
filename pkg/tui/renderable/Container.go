@@ -82,7 +82,7 @@ func (c *Container) SetBorder(
 }
 
 // Render method of container
-func (c Container) Render() (containerRendered string) {
+func (c *Container) Render() (containerRendered string) {
 	containerRendered = ""
 	containerLines := make([]string, 0)
 	for _, item := range c.items {
@@ -174,7 +174,7 @@ func (c Container) Render() (containerRendered string) {
 // DynamicRender method of container
 // Calls the DynamicRender methods of all
 // DynamicRenderable items it has
-func (c Container) DynamicRender(update chan bool) {
+func (c *Container) DynamicRender(update chan bool) {
 	for _, item := range c.items {
 		dynamicItem, ok := item.(DynamicRenderable)
 
@@ -187,7 +187,7 @@ func (c Container) DynamicRender(update chan bool) {
 // Kill method of container
 // Calls the Kill methods of all
 // DynamicRenderable items it has
-func (c Container) Kill() {
+func (c *Container) Kill() {
 	for _, item := range c.items {
 		dynamicItem, ok := item.(DynamicRenderable)
 

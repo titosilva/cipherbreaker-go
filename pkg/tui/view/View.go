@@ -80,7 +80,6 @@ func (v View) DynamicRender() {
 
 			if request {
 				// If received, show view on the screen
-				screen.Clear()
 				screen.Print(v.Render())
 				time.Sleep(screen.RefreshMinDelay)
 			}

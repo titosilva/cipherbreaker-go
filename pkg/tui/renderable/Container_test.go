@@ -9,8 +9,7 @@ import (
 func Test_container_rendering_simple_text(t *testing.T) {
 	cont := NewContainer()
 
-	var text = Text{Text: "OK"}
-	text.SetPosition(3, 4)
+	text := NewText("OK", 3, 4)
 	cont.AddItem(&text)
 
 	var rendered = strings.ReplaceAll(cont.Render(), " ", "_")
@@ -23,8 +22,8 @@ func Test_container_rendering_simple_text(t *testing.T) {
 func Test_container_rendering_multiple_text_not_overlapped(t *testing.T) {
 	cont := NewContainer()
 
-	var text2 = Text{Text: "OK2"}
-	var text = Text{Text: "OK"}
+	text2 := NewText("OK2", 0, 0)
+	text := NewText("OK", 0, 0)
 	text.SetPosition(3, 4)
 	cont.AddItem(&text)
 	cont.AddItem(&text2)
@@ -39,10 +38,10 @@ func Test_container_rendering_multiple_text_not_overlapped(t *testing.T) {
 func Test_container_rendering_multiple_text_overlapped(t *testing.T) {
 	cont := NewContainer()
 
-	var text = Text{Text: "OK"}
-	var text2 = Text{Text: "OK2"}
-	var text3 = Text{Text: "ABC"}
-	var text4 = Text{Text: "XXX"}
+	text := NewText("OK", 0, 0)
+	text2 := NewText("OK2", 0, 0)
+	text3 := NewText("ABC", 0, 0)
+	text4 := NewText("XXX", 0, 0)
 	text.SetPosition(3, 4)
 	text2.SetPosition(3, 5)
 	text3.SetPosition(3, 0)
@@ -62,10 +61,10 @@ func Test_container_rendering_multiple_text_overlapped(t *testing.T) {
 func Test_container_rendering_container_inside_container(t *testing.T) {
 	cont := NewContainer()
 
-	var text = Text{Text: "OK"}
-	var text2 = Text{Text: "OK2"}
-	var text3 = Text{Text: "ABC"}
-	var text4 = Text{Text: "XXX"}
+	text := NewText("OK", 0, 0)
+	text2 := NewText("OK2", 0, 0)
+	text3 := NewText("ABC", 0, 0)
+	text4 := NewText("XXX", 0, 0)
 	text.SetPosition(3, 4)
 	text2.SetPosition(3, 5)
 	text3.SetPosition(3, 0)
@@ -80,9 +79,10 @@ func Test_container_rendering_container_inside_container(t *testing.T) {
 	cont2 := NewContainer()
 	cont2.AddItem(&cont)
 
-	cont2.AddItem(&Text{Text: "CCC"})
+	tempText := NewText("CCC", 0, 0)
+	cont2.AddItem(&tempText)
 
-	textSpaces := Text{Text: "   "}
+	textSpaces := NewText("   ", 0, 0)
 	textSpaces.SetPosition(6, 2)
 
 	cont2.AddItem(&textSpaces)
@@ -97,10 +97,10 @@ func Test_container_rendering_container_inside_container(t *testing.T) {
 func Test_container_rendering_fixed_size(t *testing.T) {
 	cont := NewContainer()
 
-	var text = Text{Text: "OK"}
-	var text2 = Text{Text: "OK2"}
-	var text3 = Text{Text: "ABC"}
-	var text4 = Text{Text: "XXX"}
+	text := NewText("OK", 0, 0)
+	text2 := NewText("OK2", 0, 0)
+	text3 := NewText("ABC", 0, 0)
+	text4 := NewText("XXX", 0, 0)
 	text.SetPosition(3, 4)
 	text2.SetPosition(3, 5)
 	text3.SetPosition(3, 0)
@@ -115,7 +115,8 @@ func Test_container_rendering_fixed_size(t *testing.T) {
 	cont2 := NewContainer()
 	cont2.AddItem(&cont)
 
-	cont2.AddItem(&Text{Text: "CCC"})
+	tempText := NewText("CCC", 0, 0)
+	cont2.AddItem(&tempText)
 
 	textSpaces := Text{Text: "   "}
 	textSpaces.SetPosition(6, 2)
@@ -155,7 +156,8 @@ func Test_container_rendering_border(t *testing.T) {
 		t.Errorf("SetBorder returned false")
 	}
 
-	c.AddItem(&Text{Text: "My text is"})
+	tempText := NewText("My text is", 0, 0)
+	c.AddItem(&tempText)
 	txt1 := Text{Text: "here."}
 	txt1.SetPosition(1, 0)
 	c.AddItem(&txt1)

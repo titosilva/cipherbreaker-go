@@ -23,6 +23,6 @@ func (o *Object) SetPosition(row uint, col uint) {
 }
 
 // GetPosition method of object
-func (o Object) GetPosition() (row uint, col uint) {
+func (o *Object) GetPosition() (row uint, col uint) {
 	return o.position.row, o.position.col
 }
