@@ -1,17 +1,15 @@
-package container
+package renderable
 
 import (
 	"fmt"
 	"strings"
-
-	"github.com/titosilva/cipherbreaker-go/pkg/tui/renderable"
 )
 
 // Container struct
 // Container for Renderables
 type Container struct {
-	renderable.Object
-	items   []renderable.Renderable
+	Object
+	items   []Renderable
 	options struct {
 		fixedSize struct {
 			active bool
@@ -44,7 +42,7 @@ func NewContainer() Container {
 
 // AddItem method of Container
 // Adds a renderable item
-func (c *Container) AddItem(item renderable.Renderable) {
+func (c *Container) AddItem(item Renderable) {
 	c.items = append(c.items, item)
 }
 
@@ -171,4 +169,30 @@ func (c Container) Render() (containerRendered string) {
 	}
 
 	return containerRendered
+}
+
+// DynamicRender method of container
+// Calls the DynamicRender methods of all
+// DynamicRenderable items it has
+func (c Container) DynamicRender(update chan bool) {
+	for _, item := range c.items {
+		dynamicItem, ok := item.(DynamicRenderable)
+
+		if ok {
+			go dynamicItem.DynamicRender(update)
+		}
+	}
+}
+
+// Kill method of container
+// Calls the Kill methods of all
+// DynamicRenderable items it has
+func (c Container) Kill() {
+	for _, item := range c.items {
+		dynamicItem, ok := item.(DynamicRenderable)
+
+		if ok {
+			dynamicItem.Kill()
+		}
+	}
 }

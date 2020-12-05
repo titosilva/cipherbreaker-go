@@ -1,11 +1,9 @@
-package container
+package renderable
 
 import (
 	"os"
 	"strings"
 	"testing"
-
-	. "github.com/titosilva/cipherbreaker-go/pkg/tui/renderable"
 )
 
 func Test_container_rendering_simple_text(t *testing.T) {
