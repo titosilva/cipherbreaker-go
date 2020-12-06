@@ -64,7 +64,9 @@ func (main MainSection) Run() section.Section {
 		case screen.KeyEnter:
 			selected := opt.GetSelectedOption()
 			switch selected {
-			case 0, 1:
+			case 0:
+				return CipherSection{}
+			case 1:
 				i = opt.Interact()
 			case 2:
 				interacting = false

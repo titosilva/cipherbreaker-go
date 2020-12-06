@@ -100,5 +100,9 @@ func (oplist *OptionsList) Interact() byte {
 		default:
 			time.Sleep(screen.RefreshMinDelay)
 		}
+
+		if oplist.selected < 0 {
+			oplist.selected = numOfOptions - 1
+		}
 	}
 }
