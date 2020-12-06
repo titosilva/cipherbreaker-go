@@ -42,11 +42,13 @@ func (main MainSection) Run() section.Section {
 
 	op1 := renderable.NewText("Cipher/Decipher text   ", 0, 0)
 	op2 := renderable.NewText("Break ciphered text    ", 1, 0)
-	op3 := renderable.NewText("Exit                   ", 2, 0)
+	op3 := renderable.NewText("Instructions           ", 2, 0)
+	op4 := renderable.NewText("Exit                   ", 3, 0)
 
 	opt.AddOption(&op1)
 	opt.AddOption(&op2)
 	opt.AddOption(&op3)
+	opt.AddOption(&op4)
 	opt.SetPosition(h/3+1, 0)
 
 	mainView.ViewContainer.AddItem(&opt)
@@ -69,6 +71,8 @@ func (main MainSection) Run() section.Section {
 			case 1:
 				i = opt.Interact()
 			case 2:
+				return InstructionSection{}
+			case 3:
 				interacting = false
 			}
 		default:

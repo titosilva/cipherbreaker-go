@@ -37,7 +37,7 @@ func (cSection CipherSection) Run() section.Section {
 		cipherSelectionView.ViewContainer.AddItem(&inst)
 
 		// Title
-		title := renderable.NewText("Select a cipher:", h/3, 0)
+		title := renderable.NewText("Select a cipher:   ", h/3-1, 0)
 		cipherSelectionView.ViewContainer.AddItem(&title)
 
 		// Options
