@@ -153,7 +153,7 @@ func Test_container_rendering_border(t *testing.T) {
 
 	c := NewContainer()
 
-	c.SetFixedSize(10, 3)
+	c.SetFixedSize(12, 5)
 	if !c.SetBorder('|', '+', '-', '+', '|', '+', '-', '+') {
 		t.Errorf("SetBorder returned false")
 	}
@@ -175,4 +175,19 @@ func Test_container_rendering_border(t *testing.T) {
 		}
 	}
 	print(c.Render())
+}
+
+func Test_container_centralization_horizontal(t *testing.T) {
+	text := NewText("Text", 0, 0)
+	cont := NewContainer()
+	cont.AddItem(&text)
+
+	cont.SetCentralization(true, false)
+	cont.SetFixedSize(10, 2)
+
+	expected := "___Text___\n__________"
+	rendered := strings.ReplaceAll(cont.Render(), " ", "_")
+	if rendered != expected {
+		t.Errorf("Container centralization failed: expected %s, got %s", expected, rendered)
+	}
 }

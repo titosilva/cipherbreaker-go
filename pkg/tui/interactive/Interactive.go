@@ -8,5 +8,5 @@ import "github.com/titosilva/cipherbreaker-go/pkg/tui/renderable"
 // using the Interact method (it will "take control" of the interaction)
 type UserInteractive interface {
 	renderable.DynamicRenderable
-	Interact(args ...interface{}) int
+	Interact(args ...interface{}) byte
 }

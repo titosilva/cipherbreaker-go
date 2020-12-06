@@ -10,9 +10,11 @@ import (
 
 // OptionsList struct
 type OptionsList struct {
+	Object
 	optionList    []Renderable
 	selected      int
 	selectionChar byte
+	killed        bool
 }
 
 // NewOptionsList funcion
@@ -58,9 +60,10 @@ func (oplist *OptionsList) Render() string {
 }
 
 // DynamicRender method of OptionsList
+// Keeps checking for changes in the selected item
 func (oplist *OptionsList) DynamicRender(update chan bool) {
 	currentSelection := oplist.selected
-	for true {
+	for !oplist.killed {
 		// Check if selection has changed
 		if oplist.selected != currentSelection {
 			// If yes, request update
@@ -72,18 +75,30 @@ func (oplist *OptionsList) DynamicRender(update chan bool) {
 	}
 }
 
+// Kill method of OptionsList
+func (oplist *OptionsList) Kill() {
+	oplist.killed = true
+}
+
 // Interact method of OptionsList
 // Interacts with the user to select an option
-func (oplist *OptionsList) Interact() {
-	input, err := screen.ReadByte()
-
-	if err != nil {
-		return
-	}
-
-	switch input {
-	case 'd':
-
-	default:
+func (oplist *OptionsList) Interact() byte {
+	numOfOptions := len(oplist.optionList)
+	for {
+		select {
+		case input := <-screen.InputChannel:
+			switch input {
+			case 's':
+				oplist.selected = (oplist.selected + 1) % numOfOptions
+			case 'w':
+				oplist.selected = (oplist.selected - 1) % numOfOptions
+			case screen.KeyEscape, screen.KeyEnter:
+				return input
+			default:
+				time.Sleep(screen.RefreshMinDelay)
+			}
+		default:
+			time.Sleep(screen.RefreshMinDelay)
+		}
 	}
 }

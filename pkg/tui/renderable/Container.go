@@ -30,6 +30,11 @@ type Container struct {
 				brCornerChar byte
 			}
 		}
+
+		centralize struct {
+			horizontal bool
+			vertical   bool
+		}
 	}
 }
 
@@ -52,6 +57,13 @@ func (c *Container) SetFixedSize(width uint, height uint) {
 	c.options.fixedSize.active = true
 	c.options.fixedSize.width = width
 	c.options.fixedSize.height = height
+}
+
+// SetCentralization method of container
+// Sets the centralization option for vertical or horizontal
+func (c *Container) SetCentralization(horizontal, vertical bool) {
+	c.options.centralize.horizontal = horizontal
+	c.options.centralize.vertical = vertical
 }
 
 // SetBorder method of container
@@ -86,6 +98,24 @@ func (c *Container) Render() (containerRendered string) {
 	containerRendered = ""
 	containerLines := make([]string, 0)
 	for _, item := range c.items {
+		if c.options.centralize.horizontal && c.options.fixedSize.active {
+			lines := strings.Split(item.Render(), "\n")
+			max := 0
+			for _, line := range lines {
+				if len(line) > max {
+					max = len(line)
+				}
+			}
+
+			row, _ := item.GetPosition()
+			item.SetPosition(row, c.options.fixedSize.width/2-uint(max/2))
+		}
+
+		if c.options.centralize.vertical && c.options.fixedSize.active {
+			_, col := item.GetPosition()
+			item.SetPosition(uint(c.options.fixedSize.height/2), col)
+		}
+
 		var renderedLines = strings.Split(item.Render(), "\n")
 
 		rowUint, colUint := item.GetPosition()
@@ -155,8 +185,8 @@ func (c *Container) Render() (containerRendered string) {
 			padding = append(padding, c.options.fixedSize.border.topBorderChar)
 		}
 
-		paddingTop := fmt.Sprintf("%c%s%c", c.options.fixedSize.border.tlCornerChar, string(padding), c.options.fixedSize.border.trCornerChar)
-		paddingBottom := fmt.Sprintf("%c%s%c", c.options.fixedSize.border.blCornerChar, string(padding), c.options.fixedSize.border.brCornerChar)
+		paddingTop := fmt.Sprintf("%c%s%c", c.options.fixedSize.border.tlCornerChar, string(padding)[:len(padding)-2], c.options.fixedSize.border.trCornerChar)
+		paddingBottom := fmt.Sprintf("%c%s%c", c.options.fixedSize.border.blCornerChar, string(padding)[:len(padding)-2], c.options.fixedSize.border.brCornerChar)
 
 		tempContainer = append(tempContainer, string(paddingTop))
 		lines := strings.Split(containerRendered, "\n")

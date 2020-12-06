@@ -13,11 +13,15 @@ import (
 
 const (
 	// RefreshMinDelay -> time to wait on request updates
-	RefreshMinDelay = 100 * time.Millisecond
+	RefreshMinDelay = 1 * time.Millisecond
+	KeyArrows       = 27
+	KeyEscape       = 27
+	KeyEnter        = 13
 )
 
 var (
-	inputActive  bool
+	inputActive bool
+	// InputChannel to be used by the Sections
 	InputChannel chan byte
 )
 
@@ -37,7 +41,7 @@ func Init() (*term.State, error) {
 
 	go func() {
 		inputActive = true
-		InputChannel = make(chan byte, 100)
+		InputChannel = make(chan byte)
 		for inputActive {
 
 			input, _ := ReadByte()

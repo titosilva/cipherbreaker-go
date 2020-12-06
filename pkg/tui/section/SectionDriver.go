@@ -6,12 +6,9 @@ package section
 // next section
 func StartExecution(start Section) {
 	var next Section
-	var current Section
 
-	start.Run(&next)
-
-	for next != nil {
-		current = next
-		current.Run(&next)
+	next = start.Run()
+	for !next.IsEnd() {
+		next = next.Run()
 	}
 }
