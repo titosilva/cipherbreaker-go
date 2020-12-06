@@ -13,10 +13,11 @@ import (
 
 const (
 	// RefreshMinDelay -> time to wait on request updates
-	RefreshMinDelay = 1 * time.Millisecond
+	RefreshMinDelay = 10 * time.Millisecond
 	KeyArrows       = 27
 	KeyEscape       = 27
 	KeyEnter        = 13
+	KeyBackspace    = 127
 )
 
 var (

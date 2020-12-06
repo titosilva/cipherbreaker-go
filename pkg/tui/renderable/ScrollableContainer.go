@@ -78,6 +78,21 @@ func (s *ScrollableContainer) ScrollUp() {
 	}
 }
 
+// ScrollUpMax method
+func (s *ScrollableContainer) ScrollUpMax() {
+	s.scrolly = 0
+}
+
+// ScrollDownMax method
+func (s *ScrollableContainer) ScrollDownMax() {
+	renderedHeight := len(strings.Split(s.InternalContainer.Render(), "\n"))
+	if renderedHeight < s.height {
+		s.scrolly = 0
+	} else {
+		s.scrolly = renderedHeight - s.height
+	}
+}
+
 // Render method of ScrollableContainer
 func (s *ScrollableContainer) Render() string {
 	rendered := s.InternalContainer.Render()
