@@ -17,8 +17,12 @@ func (s InstructionSection) Run() section.Section {
 	insView := view.NewView(nil)
 	defer insView.Kill()
 
-	width, _ := screen.GetSize()
+	width, heigth := screen.GetSize()
 	// w := uint(width)
+
+	// Scrollable
+	scrollable := renderable.NewScrollableContainer(width, heigth)
+
 	// Welcome
 	welcomeHeader := renderable.NewText("WELCOME TO CIPHERBREAKER!", 0, 0)
 	welcome := renderable.NewText("Hello! Glad you're here. With this software you may use or break some kinds of Cipher. Currently, Caesar and Vigenere cipher are "+
@@ -26,8 +30,10 @@ func (s InstructionSection) Run() section.Section {
 
 	welcome.Wrapped(width - 2)
 
-	insView.ViewContainer.AddItem(&welcome)
-	insView.ViewContainer.AddItem(&welcomeHeader)
+	scrollable.InternalContainer.AddItem(&welcomeHeader)
+	scrollable.InternalContainer.AddItem(&welcome)
+
+	insView.ViewContainer.AddItem(&scrollable)
 
 	insView.SetBorder('|', '+', '-', '+', '|', '+', '-', '+')
 	insView.Show()
@@ -35,14 +41,13 @@ func (s InstructionSection) Run() section.Section {
 
 	interacting := true
 	for interacting {
-		select {
-		case input := <-screen.InputChannel:
-			switch input {
-			case screen.KeyEscape:
-				interacting = false
-			default:
-				time.Sleep(screen.RefreshMinDelay)
-			}
+		input := scrollable.Interact()
+
+		switch input {
+		case screen.KeyEscape:
+			interacting = false
+		default:
+			time.Sleep(screen.RefreshMinDelay)
 		}
 	}
 
