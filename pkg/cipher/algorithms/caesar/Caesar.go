@@ -2,10 +2,13 @@ package caesar
 
 import "fmt"
 
+// Caesar struct
+type Caesar struct{}
+
 // Cipher method for Caesar Cipher
 // Takes arguments as byte slices to enforce use of ASCII encoding
 // (golang doesn't have a char type, but has byte and rune)
-func Cipher(plainTextString string, key byte) (string, error) {
+func (c Caesar) Cipher(plainTextString string, key byte) (string, error) {
 	plainText := []byte(plainTextString)
 	cipherText := make([]byte, len(plainText))
 	var keyAlpha byte
@@ -33,7 +36,7 @@ func Cipher(plainTextString string, key byte) (string, error) {
 }
 
 // Decipher method
-func Decipher(cipherTextString string, key byte) (string, error) {
+func (c Caesar) Decipher(cipherTextString string, key byte) (string, error) {
 	plainText := []byte(cipherTextString)
 	cipherText := make([]byte, len(plainText))
 	var keyAlpha byte

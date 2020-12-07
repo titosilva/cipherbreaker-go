@@ -53,7 +53,7 @@ func TestCaesarCipher(t *testing.T) {
 		if c.success {
 			// Success cases
 			t.Logf("Caesar testing: %s <key: %c> -> %s", c.caseString, c.caseKey, c.expected)
-			result, err := Cipher(c.caseString, c.caseKey)
+			result, err := Caesar{}.Cipher(c.caseString, c.caseKey)
 
 			if err != nil {
 				t.Errorf("Caesar FAILED: %s <key: %c> -> expected: %s; got ERROR: %s", c.caseString, c.caseKey, c.expected, err)
@@ -65,7 +65,7 @@ func TestCaesarCipher(t *testing.T) {
 		} else {
 			// Fail cases
 			t.Logf("Caesar testing: %s <key: %c> -> expected err", c.caseString, c.caseKey)
-			result, err := Cipher(c.caseString, c.caseKey)
+			result, err := Caesar{}.Cipher(c.caseString, c.caseKey)
 
 			if err == nil {
 				t.Errorf("Caesar FAILED: %s <key: %c> -> expected error, but got: %s", c.caseString, c.caseKey, result)
@@ -123,7 +123,7 @@ func TestCaesarDipher(t *testing.T) {
 		if c.success {
 			// Success cases
 			t.Logf("Caesar testing: %s <key: %c> -> %s", c.caseString, c.caseKey, c.expected)
-			result, err := Decipher(c.caseString, c.caseKey)
+			result, err := Caesar{}.Decipher(c.caseString, c.caseKey)
 
 			if err != nil {
 				t.Errorf("Caesar FAILED: %s <key: %c> -> expected: %s; got ERROR: %s", c.caseString, c.caseKey, c.expected, err)
@@ -135,7 +135,7 @@ func TestCaesarDipher(t *testing.T) {
 		} else {
 			// Fail cases
 			t.Logf("Caesar testing: %s <key: %c> -> expected err", c.caseString, c.caseKey)
-			result, err := Decipher(c.caseString, c.caseKey)
+			result, err := Caesar{}.Decipher(c.caseString, c.caseKey)
 
 			if err == nil {
 				t.Errorf("Caesar FAILED: %s <key: %c> -> expected error, but got: %s", c.caseString, c.caseKey, result)
