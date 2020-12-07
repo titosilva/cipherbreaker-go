@@ -3,6 +3,9 @@ package cipherbreakersections
 import (
 	"time"
 
+	"github.com/titosilva/cipherbreaker-go/pkg/cipher/algorithms/caesar"
+	"github.com/titosilva/cipherbreaker-go/pkg/cipher/algorithms/vigenere"
+
 	"github.com/titosilva/cipherbreaker-go/pkg/tui/renderable"
 	"github.com/titosilva/cipherbreaker-go/pkg/tui/screen"
 	"github.com/titosilva/cipherbreaker-go/pkg/tui/section"
@@ -201,7 +204,6 @@ func (cSection CipherSection) Run() section.Section {
 		}(&interacting)
 
 		var input byte
-		onConfirmation := false
 		interactionRouter := 0
 		for interacting {
 			switch interactionRouter {
@@ -217,13 +219,11 @@ func (cSection CipherSection) Run() section.Section {
 
 			switch input {
 			case 's':
-				onConfirmation = !onConfirmation
-				time.Sleep(screen.RefreshMinDelay)
 				interactionRouter = (interactionRouter + 1) % 4
-			case 'w':
-				onConfirmation = !onConfirmation
 				time.Sleep(screen.RefreshMinDelay)
+			case 'w':
 				interactionRouter = (interactionRouter - 1) % 4
+				time.Sleep(screen.RefreshMinDelay)
 			case screen.KeyEnter:
 				key := keyInput.GetValue()
 				action := 0
@@ -243,17 +243,144 @@ func (cSection CipherSection) Run() section.Section {
 					}
 				}
 			case screen.KeyEscape:
+				interacting = false
 				return MainSection{}
 			}
 		}
 	} else if cSection.Mode == 2 && cSection.InputMode == 1 {
 		// Input from typing mode
-		// typingModeView := view.NewView(nil)
+		typingModeView := view.NewView(nil)
+		defer typingModeView.Kill()
 
-		// plainInput := renderable.NewUserInput("Plain Text: ")
-		// key := renderable.NewUserInput("Key: ")
-		// cipherInput := renderable.NewUserInput("Cipher Text: ")
+		width, height := screen.GetSize()
+		h := uint(height)
 
+		plainInput := renderable.NewUserInput("Plain Text: ")
+		keyInput := renderable.NewUserInput("Key: ")
+		cipherInput := renderable.NewUserInput("Cipher Text: ")
+
+		plainScrollable := renderable.NewScrollableContainer(width-4, height/3-1)
+		keyScrollable := renderable.NewScrollableContainer(width-4, height/3-1)
+		cipherScrollable := renderable.NewScrollableContainer(width-4, height/3-1)
+
+		keyScrollable.SetPosition(h/3+1, 0)
+		cipherScrollable.SetPosition(2*h/3+2, 0)
+
+		if cSection.CipherType == 0 {
+			keyInput.SetMaxLength(1)
+		}
+
+		plainScrollable.InternalContainer.AddItem(&plainInput)
+		keyScrollable.InternalContainer.AddItem(&keyInput)
+		cipherScrollable.InternalContainer.AddItem(&cipherInput)
+
+		typingModeView.ViewContainer.AddItem(&plainScrollable)
+		typingModeView.ViewContainer.AddItem(&keyScrollable)
+		typingModeView.ViewContainer.AddItem(&cipherScrollable)
+		typingModeView.ViewContainer.SetCentralization(true, false)
+
+		help := renderable.NewText("Esc: exit", h-2, 2)
+		typingModeView.ViewContainer.AddItem(&help)
+
+		typingModeView.SetBorder('|', '+', '-', '+', '|', '+', '-', '+')
+		typingModeView.Show()
+		go typingModeView.DynamicRender()
+
+		interacting := true
+
+		go func(updating *bool, plain, key, cipher *renderable.UserInput, cipherType int) {
+			plainValue := plain.GetValue()
+			keyValue := key.GetValue()
+			cipherValue := cipher.GetValue()
+
+			for *updating {
+				if plain.GetValue() != plainValue || key.GetValue() != keyValue {
+					if key.GetValue() != "" {
+						if cipherType == 0 {
+							// Caesar
+							caesarCipher := caesar.Caesar{}
+							keyString := key.GetValue()
+							cipherText, err := caesarCipher.Cipher(plain.GetValue(), keyString[len(keyString)-1])
+							if err != nil {
+								cipherText = "Error... :( please check your key"
+							}
+							cipher.SetValue(cipherText)
+						}
+						if cipherType == 1 {
+							// Caesar
+							vigenereCipher := vigenere.Vigenere{}
+							keyString := key.GetValue()
+							cipherText, err := vigenereCipher.Cipher(plain.GetValue(), keyString)
+							if err != nil {
+								cipherText = "Error... :( please check your key"
+							}
+							cipher.SetValue(cipherText)
+						}
+					}
+					plainValue = plain.GetValue()
+					keyValue = key.GetValue()
+					cipherValue = cipher.GetValue()
+					continue
+				} else if cipher.GetValue() != cipherValue {
+					if key.GetValue() != "" {
+						if cipherType == 0 {
+							// Caesar
+							caesarCipher := caesar.Caesar{}
+							keyString := key.GetValue()
+							plainText, err := caesarCipher.Decipher(cipher.GetValue(), keyString[len(keyString)-1])
+							if err != nil {
+								plainText = "Error... :( please check your key"
+							}
+							plain.SetValue(plainText)
+						}
+						if cipherType == 1 {
+							// Caesar
+							vigenereCipher := vigenere.Vigenere{}
+							keyString := key.GetValue()
+							plainText, err := vigenereCipher.Decipher(cipher.GetValue(), keyString)
+							if err != nil {
+								plainText = "Error... :( please check your key"
+							}
+							plain.SetValue(plainText)
+						}
+					}
+					plainValue = plain.GetValue()
+					keyValue = key.GetValue()
+					cipherValue = cipher.GetValue()
+					continue
+				}
+
+				plainValue = plain.GetValue()
+				keyValue = key.GetValue()
+				cipherValue = cipher.GetValue()
+				time.Sleep(screen.RefreshMinDelay * 1)
+			}
+		}(&interacting, &plainInput, &keyInput, &cipherInput, cSection.CipherType)
+
+		var input byte
+		interactionRouter := 0
+		for interacting {
+			switch interactionRouter {
+			case 0:
+				input = plainInput.Interact()
+			case 1:
+				input = keyInput.Interact()
+			case 2:
+				input = cipherInput.Interact()
+			}
+
+			switch input {
+			case 's':
+				interactionRouter = (interactionRouter + 1) % 3
+				time.Sleep(screen.RefreshMinDelay)
+			case 'w':
+				interactionRouter = (interactionRouter - 1) % 3
+				time.Sleep(screen.RefreshMinDelay)
+			case screen.KeyEscape:
+				interacting = false
+				return MainSection{}
+			}
+		}
 	} else {
 		// Unknown mode will stop execution
 		return EndSection{}

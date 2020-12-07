@@ -150,8 +150,10 @@ func (ui *UserInput) Interact() byte {
 					output = input
 				}
 			case screen.KeyBackspace:
-				if len(ui.Value) > 0 {
-					ui.Value = ui.Value[0 : len(ui.Value)-1]
+				if ui.editing {
+					if len(ui.Value) > 0 {
+						ui.Value = ui.Value[0 : len(ui.Value)-1]
+					}
 				}
 			default:
 				if ui.editing {
