@@ -1,6 +1,8 @@
 package cipherbreakersections
 
 import (
+	"io/ioutil"
+	"strings"
 	"time"
 
 	"github.com/titosilva/cipherbreaker-go/pkg/cipher/algorithms/caesar"
@@ -108,7 +110,7 @@ func (cSection CipherSection) Run() section.Section {
 		opt := renderable.NewOptionsList('>')
 
 		op1 := renderable.NewText("From file      ", 0, 0)
-		op2 := renderable.NewText("Type           ", 1, 0)
+		op2 := renderable.NewText("Type text      ", 1, 0)
 		op3 := renderable.NewText("Exit           ", 2, 0)
 
 		opt.AddOption(&op1)
@@ -259,12 +261,12 @@ func (cSection CipherSection) Run() section.Section {
 		keyInput := renderable.NewUserInput("Key: ")
 		cipherInput := renderable.NewUserInput("Cipher Text: ")
 
-		plainScrollable := renderable.NewScrollableContainer(width-4, height/3-1)
-		keyScrollable := renderable.NewScrollableContainer(width-4, height/3-1)
-		cipherScrollable := renderable.NewScrollableContainer(width-4, height/3-1)
+		plainScrollable := renderable.NewScrollableContainer(width-4, height/3-3)
+		keyScrollable := renderable.NewScrollableContainer(width-4, height/3-3)
+		cipherScrollable := renderable.NewScrollableContainer(width-4, height/3-3)
 
-		keyScrollable.SetPosition(h/3+1, 0)
-		cipherScrollable.SetPosition(2*h/3+2, 0)
+		keyScrollable.SetPosition(h/3-2, 0)
+		cipherScrollable.SetPosition(2*h/3-4, 0)
 
 		if cSection.CipherType == 0 {
 			keyInput.SetMaxLength(1)
@@ -279,7 +281,15 @@ func (cSection CipherSection) Run() section.Section {
 		typingModeView.ViewContainer.AddItem(&cipherScrollable)
 		typingModeView.ViewContainer.SetCentralization(true, false)
 
-		help := renderable.NewText("Esc: exit", h-2, 2)
+		helpContent := "Att.: when only key is changed, plain has preference | Esc: exit | Mode: "
+		if cSection.CipherType == 0 {
+			helpContent += "Caesar"
+		} else if cSection.CipherType == 1 {
+			helpContent += "Vigenere"
+		} else {
+			helpContent += "Unknown"
+		}
+		help := renderable.NewText(helpContent, h-5, 2)
 		typingModeView.ViewContainer.AddItem(&help)
 
 		typingModeView.SetBorder('|', '+', '-', '+', '|', '+', '-', '+')
@@ -381,10 +391,68 @@ func (cSection CipherSection) Run() section.Section {
 				return MainSection{}
 			}
 		}
-	} else {
-		// Unknown mode will stop execution
-		return EndSection{}
+	} else if cSection.Mode == 3 {
+		// Input from file
+		inputFileView := view.NewView(nil)
+		defer inputFileView.Kill()
+
+		fileContent, err := ioutil.ReadFile(cSection.FilePath)
+
+		var pageContent string
+		if err != nil {
+			pageContent = "Ops, failed to read the file :( -> File: " + cSection.FilePath
+		} else {
+			if cSection.CipherType == 0 {
+				// Caesar
+				caesarCipher := caesar.Caesar{}
+				if cSection.Action == 0 {
+					// Cipher
+					pageContent, err = caesarCipher.Cipher(string(fileContent), cSection.Key[len(cSection.Key)-1])
+				} else {
+					pageContent, err = caesarCipher.Decipher(string(fileContent), cSection.Key[len(cSection.Key)-1])
+				}
+			} else if cSection.CipherType == 1 {
+				vigenereCipher := vigenere.Vigenere{}
+				if cSection.Action == 0 {
+					pageContent, err = vigenereCipher.Cipher(string(fileContent), cSection.Key)
+				} else {
+					pageContent, err = vigenereCipher.Decipher(string(fileContent), cSection.Key)
+				}
+			}
+
+			if err != nil {
+				pageContent = "Ops, loaded from file successfully, but failed to decipher :( FileContent -> " + string(fileContent) + "; Key -> " + cSection.Key
+			}
+		}
+
+		width, height := screen.GetSize()
+		// w = uint(width)
+
+		pageContent = strings.ReplaceAll(pageContent, "\n", "")
+		text := renderable.NewText(pageContent, 0, 0)
+		text.Wrapped(width - 2)
+
+		textScroll := renderable.NewScrollableContainer(width-2, height-5)
+		textScroll.InternalContainer.AddItem(&text)
+
+		inputFileView.ViewContainer.AddItem(&textScroll)
+
+		inputFileView.SetBorder('|', '+', '-', '+', '|', '+', '-', '+')
+		inputFileView.Show()
+		go inputFileView.DynamicRender()
+
+		interacting := true
+		for interacting {
+			input := textScroll.Interact()
+
+			switch input {
+			case screen.KeyEscape:
+				interacting = false
+				return MainSection{}
+			}
+		}
 	}
+	// Unknown mode will stop execution
 	return EndSection{}
 }
 
