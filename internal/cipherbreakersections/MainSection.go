@@ -69,7 +69,7 @@ func (main MainSection) Run() section.Section {
 			case 0:
 				return CipherSection{}
 			case 1:
-				i = opt.Interact()
+				return BreakerSection{}
 			case 2:
 				return InstructionSection{}
 			case 3:

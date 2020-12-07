@@ -16,6 +16,11 @@ type ScrollableContainer struct {
 	width             int
 	height            int
 	killed            bool
+	automaticscroll   struct {
+		active bool
+		// True is down
+		direction bool
+	}
 }
 
 // NewScrollableContainer function
@@ -93,8 +98,23 @@ func (s *ScrollableContainer) ScrollDownMax() {
 	}
 }
 
+// AutomaticScroll method of ScrollableContainer
+// Activates automatic scroll
+func (s *ScrollableContainer) AutomaticScroll(active bool, directionDown bool) {
+	s.automaticscroll.active = active
+	s.automaticscroll.direction = directionDown
+}
+
 // Render method of ScrollableContainer
 func (s *ScrollableContainer) Render() string {
+	if s.automaticscroll.active {
+		if s.automaticscroll.direction {
+			s.ScrollDownMax()
+		} else {
+			s.ScrollUpMax()
+		}
+	}
+
 	rendered := s.InternalContainer.Render()
 
 	lines := make([]string, 0)
