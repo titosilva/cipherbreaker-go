@@ -7,7 +7,7 @@ Como começar? Para começar a desenvolver nesse projeto, você deve cloná-lo n
 ### Usando go get
 A opção mais tranquila é:
 
-$ go get https://github.com/titosilva/cipherbreaker-go.git/...
+$ go get github.com/titosilva/cipherbreaker-go/...
 
 Isso clonará o repositório na pasta GOPATH/src/github.com/titosilva/cipherbreaker-go, onde GOPATH é dado por
 
