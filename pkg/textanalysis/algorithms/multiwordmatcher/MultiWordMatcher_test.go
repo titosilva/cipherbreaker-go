@@ -65,7 +65,7 @@ func genTestCases() []MultiWordMatcherTestCase {
 	return cases
 }
 
-func TestMultiWordMatcher(t *testing.T) {
+func TestMultiWordMatcherDry(t *testing.T) {
 	dry := Dry{
 		WordList:      []string{"abacaxi", "morango"},
 		ThreadsNumber: 1,
@@ -73,6 +73,25 @@ func TestMultiWordMatcher(t *testing.T) {
 
 	for _, testCase := range genTestCases() {
 		matchInfo := dry.Analyse(testCase.text)
+		testMatch(matchInfo, testCase.expected, t)
+	}
+}
+
+func TestMultiWordMatcherFromChannel(t *testing.T) {
+
+	for _, testCase := range genTestCases() {
+		fromCh := FromChannel{
+			WordChannel:   make(chan string),
+			ThreadsNumber: 1,
+		}
+
+		go func() {
+			fromCh.WordChannel <- "morango"
+			fromCh.WordChannel <- "abacaxi"
+			close(fromCh.WordChannel)
+		}()
+
+		matchInfo := fromCh.Analyse(testCase.text)
 		testMatch(matchInfo, testCase.expected, t)
 	}
 }

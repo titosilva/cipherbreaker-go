@@ -6,8 +6,6 @@ import (
 
 // Test Caesar cipher method
 func TestCaesarCipher(t *testing.T) {
-	var caesar Caesar
-
 	cases := []struct {
 		caseString string
 		caseKey    byte
@@ -55,7 +53,7 @@ func TestCaesarCipher(t *testing.T) {
 		if c.success {
 			// Success cases
 			t.Logf("Caesar testing: %s <key: %c> -> %s", c.caseString, c.caseKey, c.expected)
-			result, err := caesar.Cipher(c.caseString, c.caseKey)
+			result, err := Caesar{}.Cipher(c.caseString, c.caseKey)
 
 			if err != nil {
 				t.Errorf("Caesar FAILED: %s <key: %c> -> expected: %s; got ERROR: %s", c.caseString, c.caseKey, c.expected, err)
@@ -67,7 +65,7 @@ func TestCaesarCipher(t *testing.T) {
 		} else {
 			// Fail cases
 			t.Logf("Caesar testing: %s <key: %c> -> expected err", c.caseString, c.caseKey)
-			result, err := caesar.Cipher(c.caseString, c.caseKey)
+			result, err := Caesar{}.Cipher(c.caseString, c.caseKey)
 
 			if err == nil {
 				t.Errorf("Caesar FAILED: %s <key: %c> -> expected error, but got: %s", c.caseString, c.caseKey, result)
@@ -78,8 +76,6 @@ func TestCaesarCipher(t *testing.T) {
 
 // Test Caesar cipher method
 func TestCaesarDipher(t *testing.T) {
-	var caesar Caesar
-
 	cases := []struct {
 		caseString string
 		caseKey    byte
@@ -127,7 +123,7 @@ func TestCaesarDipher(t *testing.T) {
 		if c.success {
 			// Success cases
 			t.Logf("Caesar testing: %s <key: %c> -> %s", c.caseString, c.caseKey, c.expected)
-			result, err := caesar.Decipher(c.caseString, c.caseKey)
+			result, err := Caesar{}.Decipher(c.caseString, c.caseKey)
 
 			if err != nil {
 				t.Errorf("Caesar FAILED: %s <key: %c> -> expected: %s; got ERROR: %s", c.caseString, c.caseKey, c.expected, err)
@@ -139,7 +135,7 @@ func TestCaesarDipher(t *testing.T) {
 		} else {
 			// Fail cases
 			t.Logf("Caesar testing: %s <key: %c> -> expected err", c.caseString, c.caseKey)
-			result, err := caesar.Decipher(c.caseString, c.caseKey)
+			result, err := Caesar{}.Decipher(c.caseString, c.caseKey)
 
 			if err == nil {
 				t.Errorf("Caesar FAILED: %s <key: %c> -> expected error, but got: %s", c.caseString, c.caseKey, result)

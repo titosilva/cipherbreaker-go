@@ -2,7 +2,7 @@ package caesar
 
 import "fmt"
 
-// Caesar cipher base type
+// Caesar struct
 type Caesar struct{}
 
 // Cipher method for Caesar Cipher
