@@ -30,6 +30,12 @@ Por exemplo:
 
 $ go build github.com/titosilva/cipherbreaker-go/pkg/bytestring
 
+## Instalando as dependências
+Você também precisará instalar as dependências:
+
+$ go get golang.org/x/term
+
+
 ## How to know what I can do?
 Como saber o que posso fazer?
 Na aba de issues, as tarefas foram adicionadas. Eventualmente e conforme a necessidade, adicionamos mais tarefas aos poucos :happy:
