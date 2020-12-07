@@ -17,6 +17,7 @@ type CaesarBreaker struct {
 	WordList                 []string
 	KeyChannel               chan byte
 	ResultChannel            chan BreakResult
+	PossiblePlainText        chan string
 	BreakerThreadNumber      int
 	TextAnalysisThreadNumber int
 	MinNumberOfMatches       int
@@ -32,7 +33,9 @@ func (caesarBreaker CaesarBreaker) Break(cipherText string) {
 			break
 		}
 
-		possiblePlainText, err := caesar.Decipher(cipherText, key)
+		possiblePlainText, err := caesar.Caesar{}.Decipher(cipherText, key)
+
+		caesarBreaker.PossiblePlainText <- possiblePlainText
 
 		if err != nil {
 			continue
