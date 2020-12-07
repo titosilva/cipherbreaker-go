@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/titosilva/cipherbreaker-go/internal/cipherbreakersections"
 	"github.com/titosilva/cipherbreaker-go/pkg/tui/screen"
 	"github.com/titosilva/cipherbreaker-go/pkg/tui/section"
+	"github.com/titosilva/cipherbreaker-go/private/cipherbreakersections"
 )
 
 func main() {
