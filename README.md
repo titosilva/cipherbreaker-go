@@ -23,12 +23,9 @@ Que retorna as variáveis de ambiente associadas ao Go, e, entre elas, o GOPATH.
 indicada pelo GOPATH. Procure pela pasta src, navegue até ela, confira se há uma pasta chamada
 "github.com". Se houve, navegue até ela. Crie a pasta "titosilva", navegue até ela e use o comando
 
-$ git clone https://github.com/titosilva/cipherbreaker-go.git
+$ git clone github.com/titosilva/cipherbreaker-go.git
 
 para clonar o repositório. Após isso, você terá uma pasta acessível pelo go build e outras ferramentas do go.
-Por exemplo:
-
-$ go build github.com/titosilva/cipherbreaker-go/pkg/bytestring
 
 ## Instalando as dependências
 Você também precisará instalar as dependências:
