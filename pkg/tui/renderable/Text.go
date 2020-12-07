@@ -17,6 +17,11 @@ type Text struct {
 			active bool
 			width  int
 		}
+
+		textfrompointer struct {
+			active  bool
+			pointer *string
+		}
 	}
 	killed bool
 }
@@ -38,6 +43,10 @@ func (t *Text) Render() string {
 		return t.Text
 	}
 
+	if t.options.textfrompointer.active {
+		t.Text = *t.options.textfrompointer.pointer
+	}
+
 	idx := 0
 	lines := make([]string, 0)
 	width := t.options.wrapped.width
@@ -56,6 +65,14 @@ func (t *Text) SetText(content string) {
 	t.Text = content
 }
 
+// SetTextFromPointer method of Text
+// Sets the Text content as the value in a pointer at
+// render time
+func (t *Text) SetTextFromPointer(pointer *string) {
+	t.options.textfrompointer.active = true
+	t.options.textfrompointer.pointer = pointer
+}
+
 // Wrapped method of Text
 // Sets the Text as wrapped with line of size
 // width
@@ -67,11 +84,22 @@ func (t *Text) Wrapped(width int) {
 // DynamicRender method of Text
 // Keeps watching for changes in text content.
 func (t *Text) DynamicRender(update chan bool) {
-	content := t.Text
+	var content string
+	if t.options.textfrompointer.active {
+		content = *t.options.textfrompointer.pointer
+	} else {
+		content = t.Text
+	}
 	t.killed = false
 
+	var current string
 	for !t.killed {
-		current := t.Text
+		if t.options.textfrompointer.active {
+			current = *t.options.textfrompointer.pointer
+		} else {
+			current = t.Text
+		}
+
 		if current != content {
 			update <- true
 		}

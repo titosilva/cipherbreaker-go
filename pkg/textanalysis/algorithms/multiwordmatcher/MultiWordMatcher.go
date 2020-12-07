@@ -83,7 +83,7 @@ func (fromCh FromChannel) Analyse(text string) []MatchInfo {
 		Matches:     make(chan privMatch, 100),
 	}
 
-	// Using goroutines
+	// Using goroutinesWordChannel
 	// Put words in the channel
 	go func() {
 		for true {
