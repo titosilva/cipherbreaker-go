@@ -40,6 +40,12 @@ func (b *Button) Clicked() bool {
 	return b.clicked
 }
 
+// SetText method of Button
+func (b *Button) SetText(selected, idle string) {
+	b.text.idle = idle
+	b.text.selected = selected
+}
+
 // Render method of Button
 func (b *Button) Render() string {
 	if b.interacting {

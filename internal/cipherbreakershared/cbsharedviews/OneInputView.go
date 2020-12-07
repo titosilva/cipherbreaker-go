@@ -69,9 +69,9 @@ func OneInputView(titleString, preludeString, leftButtonString, rightButtonStrin
 			interactionRouter = (interactionRouter - 1) % 3
 			time.Sleep(screen.RefreshMinDelay)
 		case screen.KeyEnter:
-			return false, right.Clicked(), left.Clicked(), userInput.GetValue()
+			return false, left.Clicked(), right.Clicked(), userInput.GetValue()
 		case screen.KeyEscape:
-			return true, right.Clicked(), left.Clicked(), userInput.GetValue()
+			return true, left.Clicked(), right.Clicked(), userInput.GetValue()
 		}
 	}
 	return true, right.Clicked(), left.Clicked(), userInput.GetValue()

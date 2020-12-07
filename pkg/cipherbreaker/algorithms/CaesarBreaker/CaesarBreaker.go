@@ -18,7 +18,6 @@ type CaesarBreaker struct {
 	KeyChannel               chan byte
 	ResultChannel            chan BreakResult
 	PossiblePlainText        chan string
-	BreakerThreadNumber      int
 	TextAnalysisThreadNumber int
 	MinNumberOfMatches       int
 }
