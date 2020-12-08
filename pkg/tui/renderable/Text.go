@@ -40,11 +40,24 @@ func (t *Text) Render() string {
 	// If text is not wrapped, just return
 	// the text
 	if !t.options.wrapped.active {
+		if t.options.textfrompointer.active {
+			return *(t.options.textfrompointer.pointer)
+		}
+
 		return t.Text
 	}
 
 	if t.options.textfrompointer.active {
-		t.Text = *t.options.textfrompointer.pointer
+		content := *(t.options.textfrompointer.pointer)
+		idx := 0
+		lines := make([]string, 0)
+		width := t.options.wrapped.width
+		for (idx+1)*width < len(content) {
+			lines = append(lines, content[idx*width:(idx+1)*width]+"\r")
+			idx++
+		}
+		lines = append(lines, content[idx*width:len(content)])
+		return strings.Join(lines, "\n")
 	}
 
 	idx := 0
@@ -86,21 +99,20 @@ func (t *Text) Wrapped(width int) {
 func (t *Text) DynamicRender(update chan bool) {
 	var content string
 	if t.options.textfrompointer.active {
-		content = *t.options.textfrompointer.pointer
+		content = *(t.options.textfrompointer.pointer)
 	} else {
 		content = t.Text
 	}
-	t.killed = false
 
 	var current string
 	for !t.killed {
 		if t.options.textfrompointer.active {
-			current = *t.options.textfrompointer.pointer
+			current = *(t.options.textfrompointer.pointer)
 		} else {
 			current = t.Text
 		}
 
-		if current != content {
+		if current != content && !t.killed {
 			update <- true
 		}
 
