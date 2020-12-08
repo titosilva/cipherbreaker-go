@@ -11,7 +11,7 @@ import (
 // Represents a rendered screen
 type View struct {
 	ViewContainer *renderable.Container
-	killed        bool
+	Killed        bool
 }
 
 // NewView function
@@ -56,8 +56,10 @@ func (v View) Render() string {
 // Show method of View
 // Shows the rendered view in the screen
 func (v View) Show() {
-	screen.Clear()
-	screen.Print(v.Render())
+	if !v.Killed {
+		screen.Clear()
+		screen.Print(v.Render())
+	}
 }
 
 // DynamicRender method of View
@@ -66,7 +68,7 @@ func (v View) DynamicRender() {
 	v.ViewContainer.DynamicRender(update)
 
 	// Wait for update requests
-	for !v.killed {
+	for !v.Killed {
 		for request := range update {
 			// Loop till buffer is empty
 			stop := false
@@ -76,6 +78,7 @@ func (v View) DynamicRender() {
 				default:
 					stop = true
 				}
+				time.Sleep(screen.RefreshMinDelay / 2)
 			}
 
 			if request {
@@ -83,8 +86,10 @@ func (v View) DynamicRender() {
 				// r := strings.ReplaceAll(v.Render(), " ", "_")
 				// r := strings.ReplaceAll(v.Render(), "\n", "")
 				// r := strings.ReplaceAll(v.Render(), "\n", "")
-				r := v.Render()
-				screen.Print(r)
+				if !v.Killed {
+					r := v.Render()
+					screen.Print(r)
+				}
 				time.Sleep(screen.RefreshMinDelay)
 			}
 		}
@@ -94,6 +99,7 @@ func (v View) DynamicRender() {
 }
 
 // Kill method of View
-func (v View) Kill() {
+func (v *View) Kill() {
+	v.Killed = true
 	v.ViewContainer.Kill()
 }
